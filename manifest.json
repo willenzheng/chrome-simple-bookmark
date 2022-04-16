@@ -1,0 +1,18 @@
+{
+  "manifest_version": 3,
+  "name": "Chrome Simple Bookmark",
+  "version": "1.0.0",
+  "description": "隐藏占位置又容易泄露隐私的书签栏",
+  "icons": {
+    "16": "img/icon_bookmark.png",
+    "48": "img/icon_bookmark.png",
+    "128": "img/icon_bookmark.png"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "permissions": [
+    "bookmarks",
+    "tabs"
+  ]
+}
