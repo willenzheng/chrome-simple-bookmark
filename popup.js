@@ -20,8 +20,8 @@ const createTree = (arr, el) => {
       a.href = item.url
       div.appendChild(a)
       div.onclick = () => {
-        chrome.tabs.create({
-          url: item.url
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabList) => {
+          chrome.tabs.update(tabList[0].id, {url: item.url})
         })
       }
     } else { // 该项为文件夹
