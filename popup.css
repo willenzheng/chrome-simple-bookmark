@@ -52,14 +52,32 @@ body {
 .panel::-webkit-scrollbar {
   display: none;
 }
+
 .item {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   padding: 8px 16px;
+  cursor: pointer;
 }
 .item:hover {
   background: var(--color-hover);
 }
+.item a {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+.item > div {
+  display: flex;
+  align-items: center;
+}
+.item .item__icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+}
+
 .folder {
   position: relative;
 }

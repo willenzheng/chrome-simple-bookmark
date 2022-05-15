@@ -1,3 +1,7 @@
+const API = {
+  iconServerUrl: 'http://www.google.com/s2/favicons?domain='
+}
+
 const container = document.querySelector('.container')
 const panel = document.createElement('div')
 panel.className = "panel"
@@ -16,27 +20,79 @@ const createTree = (arr, el) => {
     div.title = item.title
     if (item.url) { // 该项为书签
       const a = document.createElement('a')
-      a.innerText = item.title
       a.href = item.url
+
+      const img = document.createElement('img')
+      img.className = "item__icon"
+      img.src = getIcon(getUrlHost(item.url))
+      img.onerror = () => {
+        img.src = '../img/icon.png'
+      }
+
+      const span = document.createElement('span')
+      span.className = 'item__text'
+      span.innerText = item.title
+
+      a.appendChild(img)
+      a.appendChild(span)
+
       div.appendChild(a)
+
       div.onclick = () => {
         chrome.tabs.query({ active: true, currentWindow: true }, (tabList) => {
           chrome.tabs.update(tabList[0].id, {url: item.url})
+          window.close()
         })
       }
     } else { // 该项为文件夹
-      div.innerText = item.title
       div.className = 'item folder'
+
+      const subDiv = document.createElement('div')
+
+      const img = document.createElement('img')
+      img.className = "item__icon"
+      img.src = '../img/icon_folder.png'
+
+      const span = document.createElement('span')
+      span.className = 'item__text'
+      span.innerText = item.title
+
+      subDiv.appendChild(img)
+      subDiv.appendChild(span)
+
+      div.appendChild(subDiv)
+
       // 创建新panel
       const panel = document.createElement('div')
       panel.className = 'panel'
       panel.setAttribute('data-parent-id', item.id)
       panel.style.display = 'none'
+
       container.appendChild(panel)
+
       createTree(item.children, panel)
     }
     el.appendChild(div)
   })
+}
+
+/**
+ * 
+ * @param {string} url 原url
+ * @returns { string } 通过url获取到的域名
+ */
+const getUrlHost = (url) => {
+  const domain = url.split('/')
+  return domain[2]
+}
+
+/**
+ * 获取网站的图标
+ * @param { string } host 网站域名
+ * @returns { string } 图标链接
+ */
+const getIcon = (host) => {
+  return API.iconServerUrl + host
 }
 
 // 文件夹面板列表（不包括默认的第一个）
@@ -95,7 +151,7 @@ window.onload = function() {
         // 设置延迟，防止误触发
         timer = setTimeout(() => {
           togglePanel(folderItem)
-        }, 500)
+        }, 300)
       }, false)
 
       folderItem.addEventListener('mouseout', () => {
