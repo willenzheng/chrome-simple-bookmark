@@ -3,77 +3,152 @@ const API = {
 }
 
 const container = document.querySelector('.container')
-const panel = document.createElement('div')
-panel.className = "panel"
-container.appendChild(panel)
+
+window.onload = function() {
+  // 从浏览器获取书签数据
+  chrome.bookmarks.getTree(function (bookmarkArray) {
+    console.log('%c [ bookmarkArray ]-82', 'font-size:13px; background:pink; color:#bf2c9f;', bookmarkArray)
+    
+    // 「书签栏」列表
+    const bookmarks1 = bookmarkArray[0].children[0].children
+
+    // 「其他书签」列表
+    const bookmarks2 = bookmarkArray[0].children[1].children
+
+    // 默认展开列表
+    const bookmarks = bookmarks1.concat(bookmarks2)
+
+    bookmarks.forEach(item => {
+      item.depth = 1
+    })
+
+    renderList(bookmarks, container)
+  })
+}
 
 /**
- * 创建书签树
- * @param { array } arr 原数据
+ * 渲染书签列表
+ * @param { array } arr 列表数据
  * @param { string } el 容器元素
  */
-const createTree = (arr, el) => {
+const renderList = (arr, el) => {
+  // 创建一个面板
+  const panel = document.createElement('div')
+  panel.className = "panel"
+  // 面板里包含一个列表
+  const list = document.createElement('div')
+  list.className = 'list'
   arr.forEach((item) => {
-    const div = document.createElement('div')
-    div.className = 'item bookmark'
-    div.id = item.id
-    div.title = item.title
+    console.log('depth:', item.depth)
+    let div
     if (item.url) { // 该项为书签
-      const a = document.createElement('a')
-      a.href = item.url
-
-      const img = document.createElement('img')
-      img.className = "item__icon"
-      img.src = getIcon(getUrlHost(item.url))
-      img.onerror = () => {
-        img.src = '../img/icon.png'
-      }
-
-      const span = document.createElement('span')
-      span.className = 'item__text'
-      span.innerText = item.title
-
-      a.appendChild(img)
-      a.appendChild(span)
-
-      div.appendChild(a)
-
-      div.onclick = () => {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabList) => {
-          chrome.tabs.update(tabList[0].id, {url: item.url})
-          window.close()
-        })
-      }
+      div = renderBookmark(item)
     } else { // 该项为文件夹
-      div.className = 'item folder'
-
-      const subDiv = document.createElement('div')
-
-      const img = document.createElement('img')
-      img.className = "item__icon"
-      img.src = '../img/icon_folder.png'
-
-      const span = document.createElement('span')
-      span.className = 'item__text'
-      span.innerText = item.title
-
-      subDiv.appendChild(img)
-      subDiv.appendChild(span)
-
-      div.appendChild(subDiv)
-
-      // 创建新panel
-      const panel = document.createElement('div')
-      panel.className = 'panel'
-      panel.setAttribute('data-parent-id', item.id)
-      panel.style.display = 'none'
-
-      container.appendChild(panel)
-
-      createTree(item.children, panel)
+      div = renderFolder(item)
     }
-    el.appendChild(div)
+    list.appendChild(div)
   })
+  panel.appendChild(list)
+  el.appendChild(panel)
+}
+
+/**
+ * 渲染单个书签
+ * @param { object } bookmark 书签
+ */
+const renderBookmark = (bookmark) => {
+  const div = document.createElement('div')
+  div.className = 'item bookmark'
+  div.id = bookmark.id
+  div.title = bookmark.title
+
+  const a = document.createElement('a')
+  a.href = bookmark.url
+
+  const img = document.createElement('img')
+  img.className = "item__icon"
+  img.src = getIcon(getUrlHost(bookmark.url))
+  img.onerror = () => {
+    img.src = '../img/icon.png'
+  }
+
+  const span = document.createElement('span')
+  span.className = 'item__text'
+  span.innerText = bookmark.title
+
+  a.appendChild(img)
+  a.appendChild(span)
+
+  div.appendChild(a)
+
+  div.onclick = () => {
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabList) => {
+      chrome.tabs.update(tabList[0].id, {url: bookmark.url})
+      window.close()
+    })
+  }
+
+  return div
+}
+
+/**
+ * 渲染单个文件夹
+ * @param { object } folder 文件夹
+ */
+const renderFolder = (folder) => {
+  folder.children.forEach(item => {
+    item.depth = folder.depth + 1
+  })
+  const div = document.createElement('div')
+  div.className = 'item bookmark'
+  div.id = folder.id
+  div.title = folder.title
+
+  div.className = 'item folder'
+
+  const subDiv = document.createElement('div')
+
+  const img = document.createElement('img')
+  img.className = "item__icon"
+  img.src = '../img/icon_folder.png'
+
+  const span = document.createElement('span')
+  span.className = 'item__text'
+  span.innerText = folder.title
+
+  subDiv.appendChild(img)
+  subDiv.appendChild(span)
+
+  div.appendChild(subDiv)
+
+  div.addEventListener('click', () => {
+    for (let i = container.children.length - 1; i >= 0; i--) {
+      if (i >= folder.depth) {
+        container.children[i].parentElement.removeChild(container.children[i])
+      }
+    }
+    renderList(folder.children, container)
+  }, false)
+
+  let timer
+
+  div.addEventListener('mouseover', () => {
+    // 设置延迟，防止误触发
+    timer = setTimeout(() => {
+      for (let i = container.children.length - 1; i >= 0; i--) {
+        if (i >= folder.depth) {
+          container.children[i].parentElement.removeChild(container.children[i])
+        }
+      }
+      renderList(folder.children, container)
+    }, 300)
+  }, false)
+
+  div.addEventListener('mouseout', () => {
+    clearTimeout(timer)
+  })
+
+  return div
 }
 
 /**
@@ -94,70 +169,3 @@ const getUrlHost = (url) => {
 const getIcon = (host) => {
   return API.iconServerUrl + host
 }
-
-// 文件夹面板列表（不包括默认的第一个）
-let panelList = []
-
-/**
- * 切换面板
- * @param { HTMLElement } trigger 触发的元素
- */
-const togglePanel = (trigger) => {
-  const parentId = trigger.parentElement.getAttribute('data-parent-id')
-  if (parentId === null) { // 点击的元素所属的面板是第一个
-    panelList.forEach(item => {
-      item.style.display = 'none'
-    })
-    panelList = []
-  } else { // 点击的元素所属的面板不是第一个
-    let index = 0
-    for (let i = 0; i < panelList.length; i++) {
-      const panelId = panelList[i].getAttribute('data-parent-id')
-      if (panelId === parentId) {
-        index = i
-        break
-      }
-    }
-    const popList = panelList.splice(index + 1)
-    popList.forEach(popItem => {
-      popItem.style.display = 'none'
-    })
-  }
-  const panel = document.querySelector(`div[data-parent-id='${trigger.id}']`)
-  if (panel) {
-    panelList.push(panel)
-  } 
-  if (panelList.length > 0) {
-    panelList.forEach(item => {
-      item.style.display = 'block'
-    })
-  }
-}
-
-window.onload = function() {
-  chrome.bookmarks.getTree(function (bookmarkArray) {
-    console.log('%c [ bookmarkArray ]-82', 'font-size:13px; background:pink; color:#bf2c9f;', bookmarkArray)
-    createTree(bookmarkArray[0].children[0].children, panel)
-    createTree(bookmarkArray[0].children[1].children, panel)
-    const folderArr = document.querySelectorAll('.item')
-    folderArr.forEach((folderItem) => {
-      folderItem.addEventListener('click', () => {
-        togglePanel(folderItem)
-      }, false)
-
-      let timer
-
-      folderItem.addEventListener('mouseover', () => {
-        // 设置延迟，防止误触发
-        timer = setTimeout(() => {
-          togglePanel(folderItem)
-        }, 300)
-      }, false)
-
-      folderItem.addEventListener('mouseout', () => {
-        clearTimeout(timer)
-      })
-    })
-  })
-}
-
