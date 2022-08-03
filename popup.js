@@ -1,5 +1,7 @@
 const API = {
-  iconServerUrl: 'http://www.google.com/s2/favicons?domain='
+  // 谷歌的 favicon api 需要翻墙
+  // iconServerUrl: 'http://www.google.com/s2/favicons?domain='
+  iconServerUrl: 'http://beneficial-rose-seahorse.faviconkit.com/'
 }
 
 const container = document.querySelector('.container')
@@ -69,7 +71,7 @@ const renderBookmark = (bookmark) => {
   img.className = "item__icon"
   img.src = getIcon(getUrlHost(bookmark.url))
   img.onerror = () => {
-    img.src = '../img/icon.png'
+    // img.src = '../img/icon.png'
   }
 
   const span = document.createElement('span')
