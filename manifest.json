@@ -9,10 +9,19 @@
     "128": "img/icon_bookmark.png"
   },
   "action": {
+    "default_icon": {
+      "16": "img/icon_bookmark.png",
+      "48": "img/icon_bookmark.png",
+      "128": "img/icon_bookmark.png"
+    },
+    "default_title": "Bookmarks",
     "default_popup": "popup.html"
   },
   "permissions": [
     "bookmarks",
     "tabs"
-  ]
+  ],
+  "background": {
+    "service_worker": "background.js"
+  }
 }
