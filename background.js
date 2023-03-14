@@ -5,15 +5,15 @@ chrome.windows.onFocusChanged.addListener(function (windowId) {
     console.log(tabs)
     for (let i = tabs.length - 1; i >= 0; i--) {
       if (tabs[i].windowId === windowId) {
-        chrome.action.setIcon({
-          tabId: tabs[i].id,
-          path: "img/icon_bookmark.png"
-        })
+        // chrome.action.setIcon({
+        //   tabId: tabs[i].id,
+        //   path: "img/icon_bookmark.png"
+        // })
       } else {
-        chrome.action.setIcon({
-          tabId: tabs[i].id,
-          path: "img/icon_bookmark_gray.png"
-        })
+        // chrome.action.setIcon({
+        //   tabId: tabs[i].id,
+        //   path: "img/icon_bookmark_gray.png"
+        // })
       }
     }
   })
