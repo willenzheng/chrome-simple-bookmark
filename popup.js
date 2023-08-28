@@ -9,7 +9,6 @@ const container = document.querySelector('.container')
 window.onload = function() {
   // 从浏览器获取书签数据
   chrome.bookmarks.getTree(function (bookmarkArray) {
-    console.log('%c [ bookmarkArray ]-82', 'font-size:13px; background:pink; color:#bf2c9f;', bookmarkArray)
     
     // 「书签栏」列表
     const bookmarks1 = bookmarkArray[0].children[0].children
@@ -41,7 +40,6 @@ const renderList = (arr, el) => {
   const list = document.createElement('div')
   list.className = 'list'
   arr.forEach((item) => {
-    console.log('depth:', item.depth)
     let div
     if (item.url) { // 该项为书签
       div = renderBookmark(item)
@@ -70,6 +68,11 @@ const renderBookmark = (bookmark) => {
   const img = document.createElement('img')
   img.className = "item__icon"
   img.src = getIcon(getUrlHost(bookmark.url))
+  // 图标图片加载成功
+  img.onload = () => {
+    // 移除背景颜色
+    div.querySelector('.item__icon').style.background = 'none'
+  }
   img.onerror = () => {
     // img.src = '../img/icon.png'
   }
