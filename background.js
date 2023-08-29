@@ -2,7 +2,6 @@
 chrome.windows.onFocusChanged.addListener(function (windowId) {
   chrome.tabs.query({}).then(tabs => {
     // 使用倒序遍历，提高响应速度
-    console.log(tabs)
     for (let i = tabs.length - 1; i >= 0; i--) {
       if (tabs[i].windowId === windowId) {
         // chrome.action.setIcon({
