@@ -66,7 +66,7 @@ const renderBookmark = (bookmark) => {
   a.href = bookmark.url
 
   const img = document.createElement('img')
-  img.className = "item__icon"
+  img.className = "item__icon item__img"
   img.src = getIcon(getUrlHost(bookmark.url))
   // 图标图片加载成功
   img.onload = () => {
