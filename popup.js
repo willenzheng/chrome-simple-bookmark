@@ -4,6 +4,10 @@ const API = {
   iconServerUrl: 'http://beneficial-rose-seahorse.faviconkit.com/'
 }
 
+// 检测当前浏览器是否为深色模式
+const darkModeMediaQuery = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)');
+const isDarkMode = darkModeMediaQuery.matches;
+
 const container = document.querySelector('.container')
 
 window.onload = function() {
@@ -115,7 +119,7 @@ const renderFolder = (folder) => {
 
   const img = document.createElement('img')
   img.className = "item__icon"
-  img.src = '../img/icon_folder.png'
+  img.src = isDarkMode ? '../img/icon_folder_light.png' : '../img/icon_folder.png'
 
   const span = document.createElement('span')
   span.className = 'item__text'
