@@ -1,0 +1,565 @@
+:root {
+  --primary-color: #1a73e8;
+  --bg-color: #f8f9fa;
+  --sidebar-width: 280px;
+  --border-color: #dadce0;
+  --text-primary: #202124;
+  --text-secondary: #5f6368;
+  --hover-bg: #f1f3f4;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", sans-serif;
+  background-color: var(--bg-color);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  color: var(--text-primary);
+}
+
+/* 顶部工具栏 */
+header {
+  background: linear-gradient(135deg, var(--primary-color), #1557b0);
+  color: white;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  min-height: 56px;
+}
+
+.header-title {
+  font-size: 18px;
+  font-weight: 600;
+  white-space: nowrap;
+  margin-right: 24px;
+}
+
+.search-container {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  padding: 8px 16px;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  max-width: 400px;
+  transition: background 0.2s;
+}
+
+.search-container:focus-within {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.search-container input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  outline: none;
+  font-size: 14px;
+}
+
+.search-container input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 主体内容区 */
+.main-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* 左侧标签栏 */
+.sidebar {
+  width: var(--sidebar-width);
+  background: white;
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+}
+
+.sidebar-title {
+  padding: 16px 20px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.tag-list {
+  list-style: none;
+  margin: 0;
+  padding: 8px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.tag-item {
+  padding: 10px 16px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  transition: all 0.2s;
+  color: var(--text-primary);
+  font-size: 13px;
+  /* add vertical spacing so selected items don't blur together */
+  margin: 4px 8px;
+  border-radius: 8px;
+  user-select: none;
+}
+
+.tag-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.tag-item.active {
+  background-color: #c5e1f8;
+  color: var(--primary-color);
+  font-weight: 600;
+  /* ensure active items still have the same margin spacing */
+  margin-bottom: 4px;
+}
+
+.tag-item span:first-child {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tag-item small {
+  margin-left: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* 右侧内容区 */
+.content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.content-header {
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+  background: white;
+}
+
+.content-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.result-count {
+  font-size: 13px;
+  color: var(--text-secondary);
+  padding: 6px 12px;
+  background: var(--hover-bg);
+  border-radius: 16px;
+}
+
+.bookmark-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 32px;
+  /* 使用瀑布流布局 */
+  column-count: 3;
+  column-gap: 16px;
+  /* fallback to grid on older browsers */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  align-content: start;
+}
+
+.bm-card {
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 12px;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
+  /* remove fixed min-height so card height grows with content */
+  min-height: auto;
+  justify-content: flex-start;
+  position: relative;
+  /* allow card to break across columns nicely */
+  break-inside: avoid;
+}
+
+.bm-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  border-color: var(--primary-color);
+}
+
+.bm-title {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  /* allow title to occupy as many lines as needed rather than clamping */
+  display: block;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.bm-title:hover {
+  text-decoration: underline;
+}
+
+.bm-tags {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 24px;
+}
+
+.tag-pill {
+  font-size: 11px;
+  background: #e8f0fe;
+  color: var(--primary-color);
+  padding: 4px 9px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.tag-pill:hover {
+  background: #c5e1f8;
+  font-weight: 500;
+}
+
+/* when tag pill contains a remove button */
+/* keep pill width unchanged by not adding extra padding */
+.tag-pill {
+  position: relative;
+}
+
+/* red close icon in top-right corner */
+.tag-pill .tag-remove {
+  position: absolute;
+  /* move slightly outside pill boundaries */
+  right: -4px;
+  top: -4px;
+  width: 16px;
+  height: 16px;
+  background: #d33b27;
+  border-radius: 50%;
+  color: white;
+  font-size: 12px;
+  line-height: 16px; /* center vertically */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  display: none;
+}
+
+.tag-pill:hover .tag-remove {
+  display: inline;
+}
+
+.bm-url {
+  font-size: 11px;
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+  margin-top: auto;
+  border-top: 1px solid #f0f0f0;
+}
+
+/* hide url by default to make cards more compact; revealed via context menu */
+.bm-url {
+  display: none;
+}
+
+/* card context menu styling (reuse tag menu styles) */
+.card-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 2000;
+  min-width: 160px;
+  padding: 4px 0;
+}
+
+.card-context-menu-item {
+  padding: 8px 16px;
+  cursor: default;
+  font-size: 13px;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+/* 标签输入框 */
+.tag-input {
+  display: none;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-size: 12px;
+  margin-left: 4px;
+  max-width: 120px;
+}
+
+/* show the tag input when hovering over the card *or when it has focus
+   this prevents the input disappearing as soon as the mouse moves off the
+   card while interacting with the datalist suggestions */
+/* keep input visible when hovering the card or when the card/input has focus
+   this covers cases where the user clicks on a suggestion and focus
+   briefly moves (datalist interactions can blur the input) */
+.bm-card:hover .tag-input,
+.bm-card:focus-within .tag-input,
+.tag-input:focus {
+  display: inline-block;
+}
+
+/* 编辑模态框 */
+.edit-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-modal.active {
+  display: flex;
+}
+
+.edit-modal-content {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  width: 90%;
+  max-width: 500px;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.edit-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 16px;
+  color: var(--text-primary);
+}
+
+.edit-modal-input {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.edit-modal-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+}
+
+.edit-modal-hint {
+  font-size: 12px;
+  color: var(--text-secondary);
+  margin-bottom: 16px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.edit-modal-actions {
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+}
+
+.edit-modal-btn {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.edit-modal-btn.cancel {
+  background: #f1f3f4;
+  color: var(--text-primary);
+}
+
+.edit-modal-btn.cancel:hover {
+  background: #e8eaed;
+}
+
+.edit-modal-btn.save {
+  background: var(--primary-color);
+  color: white;
+}
+
+.edit-modal-btn.save:hover {
+  background: #1557b0;
+}
+
+/* 编辑按钮 */
+.bm-edit-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  cursor: pointer;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  font-size: 16px;
+  opacity: 0;
+}
+
+.bm-card:hover .bm-edit-btn {
+  opacity: 1;
+  background: #f1f3f4;
+}
+
+.bm-edit-btn:hover {
+  background: #e8eaed;
+  color: var(--primary-color);
+}
+
+/* 分页控件 */
+.pagination {
+  padding: 20px 32px;
+  text-align: center;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.pagination button {
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background: white;
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: all 0.2s;
+  min-width: 36px;
+}
+
+.pagination button:hover {
+  border-color: var(--primary-color);
+  color: var(--primary-color);
+}
+
+.pagination button.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+  font-weight: 600;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  flex-direction: column;
+  color: var(--text-secondary);
+}
+
+.empty-state p {
+  font-size: 18px;
+  margin: 0;
+}
+
+/* 标签右键菜单 */
+.tag-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  z-index: 2000;
+  min-width: 120px;
+  padding: 4px 0;
+}
+
+.tag-context-menu-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  color: var(--text-primary);
+  transition: background-color 0.1s;
+  user-select: none;
+}
+
+.tag-context-menu-item:hover {
+  background-color: var(--hover-bg);
+}
+
+.tag-context-menu-item.danger {
+  color: #d33b27;
+}
+
+.tag-context-menu-item.danger:hover {
+  background-color: #ffebee;
+}

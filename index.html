@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>标签书签管理器</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="header-title">📌 标签书签管理器</div>
+    <div class="search-container">
+      <input type="text" id="search-input" placeholder="搜索书签或标签...">
+    </div>
+  </header>
+
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="sidebar-title">标签 (<span id="tag-count">0</span>)</div>
+      <ul id="tag-list" class="tag-list">
+      </ul>
+    </aside>
+
+    <main class="content-area">
+      <div class="content-header">
+        <h2 id="content-title">全部书签</h2>
+        <span id="result-count" class="result-count">0 个书签</span>
+      </div>
+      <div id="bookmark-list" class="bookmark-list">
+      </div>
+      <div class="pagination" id="pagination"></div>
+      <div id="empty-state" class="empty-state" style="display:none;">
+        <p>📚 暂无书签</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- 编辑模态框 -->
+  <div class="edit-modal" id="edit-modal">
+    <div class="edit-modal-content">
+      <h3 class="edit-modal-title">编辑书签名称</h3>
+      <input type="text" class="edit-modal-input" id="edit-input" placeholder="输入新的书签名称">
+      <div class="edit-modal-hint">💡 提示: 在书签名后加 #标签 可添加标签，例如：Google #搜索 #工具</div>
+      <div class="edit-modal-actions">
+        <button class="edit-modal-btn cancel" id="edit-cancel">取消</button>
+        <button class="edit-modal-btn save" id="edit-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="main.js"></script>
+  <!-- 标签输入建议列表 -->
+  <datalist id="tag-suggestions"></datalist>
+</body>
+</html>
