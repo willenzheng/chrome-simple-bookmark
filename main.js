@@ -4,6 +4,7 @@ let selectedTags = [];
 let currentPage = 1;
 let searchQuery = '';
 const PAGE_SIZE = 12;
+const UNTAGGED_TAG = '__untagged__';
 
 // 当前已有标签集合，用于输入提示
 let uniqueTags = [];
@@ -160,10 +161,14 @@ function getFilteredBookmarks() {
   
   // 按标签过滤（多选）
   if (selectedTags.length > 0) {
-    // 若选择多个标签，取交集：书签必须包含所有选中标签
-    filtered = filtered.filter(bm =>
-      selectedTags.every(tag => bm.tags.includes(tag))
-    );
+    if (selectedTags.includes(UNTAGGED_TAG)) {
+      filtered = filtered.filter(bm => bm.tags.length === 0);
+    } else {
+      // 若选择多个标签，取交集：书签必须包含所有选中标签
+      filtered = filtered.filter(bm =>
+        selectedTags.every(tag => bm.tags.includes(tag))
+      );
+    }
   }
   
   // 按搜索词过滤
@@ -217,6 +222,25 @@ function renderTags() {
   } else {
     allTag.classList.remove('active');
   }
+
+  // 无标签书签项
+  const untaggedCount = allBookmarks.filter(bm => bm.tags.length === 0).length;
+  let untaggedTag = tagList.querySelector(`[data-tag="${UNTAGGED_TAG}"]`);
+  if (!untaggedTag) {
+    untaggedTag = document.createElement('li');
+    untaggedTag.className = 'tag-item';
+    untaggedTag.dataset.tag = UNTAGGED_TAG;
+    untaggedTag.addEventListener('click', (e) => {
+      toggleTagSelection(UNTAGGED_TAG, untaggedTag, e);
+    });
+    tagList.insertBefore(untaggedTag, tagList.children[1] || null);
+  }
+  untaggedTag.innerHTML = `<span>无标签</span><small>${untaggedCount}</small>`;
+  if (selectedTags.includes(UNTAGGED_TAG)) {
+    untaggedTag.classList.add('active');
+  } else {
+    untaggedTag.classList.remove('active');
+  }
   
   // 按字母顺序添加标签
   Object.keys(tagCounts)
@@ -237,8 +261,8 @@ function renderTags() {
       tagList.appendChild(li);
     });
   
-  // 更新标签数量显示
-  document.getElementById('tag-count').textContent = Object.keys(tagCounts).length;
+  // 更新标签数量显示（包含“无标签”项）
+  document.getElementById('tag-count').textContent = Object.keys(tagCounts).length + 1;
   
   // 更新 suggestions 列表
   uniqueTags = Object.keys(tagCounts).sort();
@@ -311,7 +335,7 @@ function renderBookmarks() {
   } else if (selectedTags.length === 0) {
     document.getElementById('content-title').textContent = '全部书签';
   } else {
-    document.getElementById('content-title').textContent = `标签: ${selectedTags.map(t => `#${t}`).join(', ')}`;
+    document.getElementById('content-title').textContent = `标签: ${selectedTags.map(t => t === UNTAGGED_TAG ? '无标签' : `#${t}`).join(', ')}`;
   }
   
   // 更新结果计数
