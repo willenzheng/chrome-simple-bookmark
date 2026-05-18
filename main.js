@@ -430,6 +430,15 @@ function bindBookmarkCardEvents() {
     }
   });
 
+  // 委托处理 tag-input 失焦保存
+  container.addEventListener('focusout', (e) => {
+    if (e.target.classList.contains('tag-input')) {
+      const input = e.target;
+      const bookmarkId = input.dataset.bookmarkId;
+      saveTagInputOnBlur(input, bookmarkId);
+    }
+  });
+
   // 委托处理标签删除点击
   container.addEventListener('click', (e) => {
     if (e.target.classList.contains('tag-remove')) {
@@ -468,13 +477,16 @@ function tagInputKey(e, bookmarkId) {
   if (e.key === 'Enter') {
     e.preventDefault();
     setTimeout(() => {
-      const val = input.value.trim();
-      if (val) {
-        addTagToBookmark(bookmarkId, val);
-        input.value = '';
-      }
+      saveTagInputOnBlur(input, bookmarkId);
     }, 0);
   }
+}
+
+function saveTagInputOnBlur(input, bookmarkId) {
+  const val = input.value.trim();
+  if (!val) return;
+  addTagToBookmark(bookmarkId, val);
+  input.value = '';
 }
 
 /**
