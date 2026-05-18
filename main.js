@@ -205,7 +205,7 @@ function renderTags() {
     allTag.className = 'tag-item';
     allTag.dataset.tag = 'all';
     allTag.addEventListener('click', (e) => {
-      toggleTagSelection('all', allTag);
+      toggleTagSelection('all', allTag, e);
     });
     tagList.insertBefore(allTag, tagList.firstChild);
   }
@@ -226,7 +226,7 @@ function renderTags() {
       li.className = 'tag-item';
       li.dataset.tag = tag;
       li.innerHTML = `<span>#${tag}</span><small>${tagCounts[tag]}</small>`;
-      li.onclick = () => toggleTagSelection(tag, li);
+      li.onclick = (e) => toggleTagSelection(tag, li, e);
       li.oncontextmenu = (e) => {
         e.preventDefault();
         showTagContextMenu(tag, e.clientX, e.clientY);
@@ -251,27 +251,34 @@ function renderTags() {
 /**
  * 切换标签选中状态或清空全部
  */
-function toggleTagSelection(tag, element) {
+function toggleTagSelection(tag, element, event) {
   const allTagEl = document.querySelector('.tag-item[data-tag="all"]');
-  
+  const multiSelect = event && (event.ctrlKey || event.metaKey);
+
   if (tag === 'all') {
     // 选中全部书签
     selectedTags = [];
     document.querySelectorAll('.tag-item').forEach(el => el.classList.remove('active'));
     if (allTagEl) allTagEl.classList.add('active');
   } else {
-    if (allTagEl) allTagEl.classList.remove('active');
-    const idx = selectedTags.indexOf(tag);
-    if (idx === -1) {
-      selectedTags.push(tag);
-      element.classList.add('active');
+    if (multiSelect) {
+      if (allTagEl) allTagEl.classList.remove('active');
+      const idx = selectedTags.indexOf(tag);
+      if (idx === -1) {
+        selectedTags.push(tag);
+        element.classList.add('active');
+      } else {
+        selectedTags.splice(idx, 1);
+        element.classList.remove('active');
+      }
+      if (selectedTags.length === 0 && allTagEl) {
+        allTagEl.classList.add('active');
+      }
     } else {
-      selectedTags.splice(idx, 1);
-      element.classList.remove('active');
-    }
-    // 如果没有选中的标签，则回到全部状态
-    if (selectedTags.length === 0 && allTagEl) {
-      allTagEl.classList.add('active');
+      selectedTags = [tag];
+      document.querySelectorAll('.tag-item').forEach(el => el.classList.remove('active'));
+      if (element) element.classList.add('active');
+      if (allTagEl) allTagEl.classList.remove('active');
     }
   }
 
