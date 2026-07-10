@@ -356,7 +356,7 @@ function renderBookmarks() {
   
   container.innerHTML = pageData.map(bm => `
     <div class="bm-card">
-      <a href="${escapeHtml(bm.url)}" class="bm-title" target="_blank" title="${escapeHtml(bm.cleanTitle)}">${escapeHtml(bm.cleanTitle)}</a>
+      <a href="${escapeHtml(bm.url)}" class="bm-title" target="_self" title="${escapeHtml(bm.cleanTitle)}">${escapeHtml(bm.cleanTitle)}</a>
       <div class="bm-tags">
         ${bm.tags.map(t => `<span class="tag-pill" data-tag="${escapeHtml(t)}" data-bmid="${bm.id}" role="button" title="点击筛选此标签">#${escapeHtml(t)}<span class="tag-remove" title="删除标签">×</span></span>`).join('')}
         <input type="text" class="tag-input" placeholder="+标签" list="tag-suggestions" data-bookmark-id="${bm.id}">
@@ -397,6 +397,18 @@ function renderTagSuggestions() {
 function bindBookmarkCardEvents() {
   const container = document.getElementById('bookmark-list');
   if (!container) return;
+
+  // 委托处理书签标题点击事件
+  container.addEventListener('click', (e) => {
+    const titleLink = e.target.closest('.bm-title');
+    if (titleLink) {
+      e.preventDefault();
+      const url = titleLink.getAttribute('href');
+      if (url) {
+        window.location.assign(url);
+      }
+    }
+  });
 
   // 委托处理 tag-pill 点击事件
   container.addEventListener('click', (e) => {
