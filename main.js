@@ -11,12 +11,39 @@ let uniqueTags = [];
 
 // 编辑相关
 let editingBookmark = null;
+let currentTheme = 'light';
+
+function applyTheme(theme) {
+  currentTheme = theme;
+  document.body.setAttribute('data-theme', theme);
+  const toggle = document.getElementById('theme-toggle');
+  if (toggle) {
+    toggle.textContent = theme === 'dark' ? '☀️ 亮色模式' : '🌙 深色模式';
+    toggle.setAttribute('aria-label', theme === 'dark' ? '切换到亮色模式' : '切换到深色模式');
+  }
+  localStorage.setItem('bookmark-theme', theme);
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme === 'dark' ? 'light' : 'dark');
+}
+
+function bindThemeToggle() {
+  const toggle = document.getElementById('theme-toggle');
+  if (toggle) {
+    toggle.addEventListener('click', toggleTheme);
+  }
+}
 
 /**
  * 初始化插件
  */
 async function init() {
   try {
+    const savedTheme = localStorage.getItem('bookmark-theme');
+    const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
+
     const tree = await chrome.bookmarks.getTree();
     allBookmarks = flattenBookmarks(tree);
     
@@ -25,6 +52,9 @@ async function init() {
     
     // 绑定搜索事件
     document.getElementById('search-input').addEventListener('input', onSearchChange);
+
+    // 绑定主题切换事件
+    bindThemeToggle();
     
     // 绑定编辑模态框事件
     bindEditModalEvents();

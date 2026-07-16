@@ -6,6 +6,41 @@
   --text-primary: #202124;
   --text-secondary: #5f6368;
   --hover-bg: #f1f3f4;
+  --surface-color: #ffffff;
+  --surface-elevated: #ffffff;
+  --header-gradient-start: #1a73e8;
+  --header-gradient-end: #1557b0;
+  --shadow-color: rgba(0, 0, 0, 0.08);
+  --input-bg: #ffffff;
+  --input-border: #dadce0;
+  --tag-pill-bg: #e8f0fe;
+  --tag-pill-color: #1a73e8;
+  --tag-pill-hover-bg: #c5e1f8;
+  --modal-bg: #ffffff;
+  --menu-bg: #ffffff;
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+}
+
+body[data-theme="dark"] {
+  --primary-color: #60a5fa;
+  --bg-color: #0f172a;
+  --border-color: #334155;
+  --text-primary: #f8fafc;
+  --text-secondary: #cbd5e1;
+  --hover-bg: #334155;
+  --surface-color: #111827;
+  --surface-elevated: #1f2937;
+  --header-gradient-start: #2563eb;
+  --header-gradient-end: #1d4ed8;
+  --shadow-color: rgba(0, 0, 0, 0.35);
+  --input-bg: #0f172a;
+  --input-border: #475569;
+  --tag-pill-bg: #1d4ed8;
+  --tag-pill-color: #dbeafe;
+  --tag-pill-hover-bg: #2563eb;
+  --modal-bg: #111827;
+  --menu-bg: #111827;
+  --overlay-bg: rgba(0, 0, 0, 0.72);
 }
 
 * {
@@ -24,14 +59,44 @@ body {
 
 /* 顶部工具栏 */
 header {
-  background: linear-gradient(135deg, var(--primary-color), #1557b0);
+  background: linear-gradient(135deg, var(--header-gradient-start), var(--header-gradient-end));
   color: white;
   padding: 12px 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px var(--shadow-color);
   min-height: 56px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  justify-content: flex-end;
+}
+
+.theme-toggle {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.16);
+  color: white;
+  border-radius: 999px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 13px;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.theme-toggle:hover {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+body[data-theme="dark"] .theme-toggle {
+  border-color: var(--border-color);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
 }
 
 .header-title {
@@ -79,11 +144,11 @@ header {
 /* 左侧标签栏 */
 .sidebar {
   width: var(--sidebar-width);
-  background: white;
+  background: var(--surface-color);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+  box-shadow: 2px 0 4px var(--shadow-color);
 }
 
 .sidebar-title {
@@ -159,7 +224,7 @@ header {
   align-items: center;
   justify-content: space-between;
   flex-shrink: 0;
-  background: white;
+  background: var(--surface-color);
 }
 
 .content-header h2 {
@@ -192,7 +257,7 @@ header {
 }
 
 .bm-card {
-  background: white;
+  background: var(--surface-color);
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px;
@@ -209,7 +274,7 @@ header {
 }
 
 .bm-card:hover {
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 12px var(--shadow-color);
   border-color: var(--primary-color);
 }
 
@@ -240,8 +305,8 @@ header {
 
 .tag-pill {
   font-size: 11px;
-  background: #e8f0fe;
-  color: var(--primary-color);
+  background: var(--tag-pill-bg);
+  color: var(--tag-pill-color);
   padding: 4px 9px;
   border-radius: 12px;
   cursor: pointer;
@@ -251,7 +316,7 @@ header {
 }
 
 .tag-pill:hover {
-  background: #c5e1f8;
+  background: var(--tag-pill-hover-bg);
   font-weight: 500;
 }
 
@@ -292,9 +357,8 @@ header {
   text-overflow: ellipsis;
   white-space: nowrap;
   padding-top: 10px;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-color);
   margin-top: auto;
-  border-top: 1px solid #f0f0f0;
 }
 
 /* hide url by default to make cards more compact; revealed via context menu */
@@ -305,10 +369,10 @@ header {
 /* card context menu styling (reuse tag menu styles) */
 .card-context-menu {
   position: fixed;
-  background: white;
+  background: var(--menu-bg);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px var(--shadow-color);
   z-index: 2000;
   min-width: 160px;
   padding: 4px 0;
@@ -325,7 +389,9 @@ header {
 /* 标签输入框 */
 .tag-input {
   display: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--input-border);
+  background: var(--input-bg);
+  color: var(--text-primary);
   border-radius: 6px;
   padding: 4px 8px;
   font-size: 12px;
@@ -353,7 +419,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--overlay-bg);
   z-index: 1000;
   align-items: center;
   justify-content: center;
@@ -364,10 +430,10 @@ header {
 }
 
 .edit-modal-content {
-  background: white;
+  background: var(--modal-bg);
   border-radius: 12px;
   padding: 24px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px var(--shadow-color);
   width: 90%;
   max-width: 500px;
   animation: slideUp 0.3s ease;
@@ -413,7 +479,7 @@ header {
   color: var(--text-secondary);
   margin-bottom: 16px;
   padding: 8px;
-  background: #f5f5f5;
+  background: var(--hover-bg);
   border-radius: 4px;
 }
 
@@ -434,12 +500,12 @@ header {
 }
 
 .edit-modal-btn.cancel {
-  background: #f1f3f4;
+  background: var(--hover-bg);
   color: var(--text-primary);
 }
 
 .edit-modal-btn.cancel:hover {
-  background: #e8eaed;
+  background: var(--border-color);
 }
 
 .edit-modal-btn.save {
@@ -473,11 +539,11 @@ header {
 
 .bm-card:hover .bm-edit-btn {
   opacity: 1;
-  background: #f1f3f4;
+  background: var(--hover-bg);
 }
 
 .bm-edit-btn:hover {
-  background: #e8eaed;
+  background: var(--border-color);
   color: var(--primary-color);
 }
 
@@ -495,7 +561,7 @@ header {
 .pagination button {
   padding: 8px 12px;
   border: 1px solid var(--border-color);
-  background: white;
+  background: var(--surface-color);
   cursor: pointer;
   border-radius: 4px;
   font-size: 13px;
@@ -534,10 +600,10 @@ header {
 /* 标签右键菜单 */
 .tag-context-menu {
   position: fixed;
-  background: white;
+  background: var(--menu-bg);
   border: 1px solid var(--border-color);
   border-radius: 4px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px var(--shadow-color);
   z-index: 2000;
   min-width: 120px;
   padding: 4px 0;
